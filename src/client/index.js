@@ -4,14 +4,7 @@ import errors from '../errors/index.js';
  * A lightweight GraphQL client with built-in authentication.
  */
 class GraphQLClient {
-  /**
-   * @param {string} endpoint - The GraphQL API endpoint.
-   */
-  constructor(endpoint) {
-    if (!endpoint) {
-      throw new Error('Endpoint is required for GraphQLClient.');
-    }
-    this.endpoint = endpoint;
+  constructor() {
     this.headers = {
       'Content-Type': 'application/json',
     };
@@ -19,28 +12,31 @@ class GraphQLClient {
 
   /**
    * Configures the client with authentication credentials.
-   * @param {string} clientId - The client ID for authentication.
-   * @param {string} secret - The client secret for authentication.
+   * @param {string} clientId The client ID for authentication.
+   * @param {string} secret The client secret for authentication.
+   * @param {string} endpoint - The GraphQL API endpoint.
    * @returns {GraphQLClient} The configured instance of GraphQLClient.
-   * @throws {errors.auth.MissingEnvironmentVariablesError} If `clientId` or `secret` are not provided.
+   * @throws MissingEnvironmentVariablesError if `clientId` or `secret` are not provided.
    */
-  config(clientId, secret) {
+  config(clientId, secret, endpoint) {
     if (!clientId || !secret) {
       console.error(
-        'Please ensure that you have both the clientId and secret variables set.',
+        'Please ensure that you have both the clientId, secret, and endpoint variables set.',
       );
       throw new errors.auth.MissingEnvironmentVariablesError();
     }
 
+    this.endpoint = endpoint;
     this.clientId = clientId;
     this.secret = secret;
+
     return this;
   }
 
   /**
    * Authenticates the client and sets the `Authorization` header.
    * @returns {Promise<GraphQLClient>} The authenticated instance of GraphQLClient.
-   * @throws {errors.auth.AuthorisationFailedError} If authentication fails.
+   * @throws AuthorisationFailedError if authentication fails.
    */
   async auth() {
     try {
@@ -77,7 +73,7 @@ class GraphQLClient {
 
       return this;
     } catch (error) {
-      console.error('Authentication error:', error.message);
+      console.error(error.message);
       throw error;
     }
   }
@@ -94,7 +90,7 @@ class GraphQLClient {
       const response = await fetch(this.endpoint, {
         method: 'POST',
         headers: this.headers,
-        body: JSON.stringify({ query, variables }),
+        body: new URLSearchParams({ query, variables }).toString(),
       });
 
       if (!response.ok) {
@@ -109,7 +105,7 @@ class GraphQLClient {
 
       return json.data;
     } catch (error) {
-      console.error('GraphQL request error:', error.message);
+      console.error(error.message);
       throw error;
     }
   }
