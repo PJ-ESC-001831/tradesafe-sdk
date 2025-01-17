@@ -1,0 +1,24 @@
+{
+  "name": "tradesafe-sdk",
+  "version": "0.0.0",
+  "description": "An SDK that I built to interact with the Tradesafe GraphQL interface from my project.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/PJ-ESC-001831/tradesafe-sdk.git"
+  },
+  "keywords": [
+    "sdk",
+    "tradesafe",
+    "nodejs"
+  ],
+  "author": "jaak",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/PJ-ESC-001831/tradesafe-sdk/issues"
+  },
+  "homepage": "https://github.com/PJ-ESC-001831/tradesafe-sdk#readme"
+}
