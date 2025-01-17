@@ -1,5 +1,7 @@
-import authErrors from './auth';
+import authErrors from './auth.js';
+import graphqlErrors from './graphql.js';
 
-module.exports = {
-  ...authErrors,
+export default {
+  auth: authErrors,
+  graphql: graphqlErrors,
 };
