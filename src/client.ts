@@ -7,26 +7,27 @@ import {
  * A lightweight GraphQL client with built-in authentication.
  */
 class GraphQLClient {
-  private headers: Record<string, string>;
-  private endpoint?: string;
+  public headers: Record<string, string>;
+  public endpoint?: string;
   private clientId?: string;
   private secret?: string;
+  private accessToken?: string;
 
   constructor() {
     this.headers = {
       'Content-Type': 'application/json',
     };
+    this.endpoint = 'https://api.tradesafe.co.za/graphql';
   }
 
   /**
    * Configures the client with authentication credentials.
    * @param clientId - The client ID for authentication.
    * @param secret - The client secret for authentication.
-   * @param endpoint - The GraphQL API endpoint.
    * @returns The configured instance of GraphQLClient.
    * @throws MissingEnvironmentVariablesError if `clientId` or `secret` are not provided.
    */
-  config(clientId: string, secret: string, endpoint: string): GraphQLClient {
+  public config(clientId: string, secret: string): GraphQLClient {
     if (!clientId || !secret) {
       console.error(
         'Please ensure that you have both the clientId, secret, and endpoint variables set.',
@@ -34,7 +35,6 @@ class GraphQLClient {
       throw new MissingEnvironmentVariablesError();
     }
 
-    this.endpoint = endpoint;
     this.clientId = clientId;
     this.secret = secret;
 
@@ -42,11 +42,18 @@ class GraphQLClient {
   }
 
   /**
+   * Proxy for whether the client is authenticated without exposing the access token.
+   */
+  public isAuthenticated(): boolean {
+    return !!this.accessToken;
+  }
+
+  /**
    * Authenticates the client and sets the `Authorization` header.
    * @returns The authenticated instance of GraphQLClient.
    * @throws AuthorisationFailedError if authentication fails.
    */
-  async auth(): Promise<GraphQLClient> {
+  public async authenticate(): Promise<GraphQLClient> {
     if (!this.clientId || !this.secret) {
       throw new MissingEnvironmentVariablesError(
         'Authentication configuration is incomplete.',
@@ -82,10 +89,7 @@ class GraphQLClient {
         );
       }
 
-      this.headers = {
-        ...this.headers,
-        Authorization: `Bearer ${accessToken}`,
-      };
+      this.setAccessToken(accessToken);
 
       return this;
     } catch (error: any) {
@@ -95,13 +99,21 @@ class GraphQLClient {
   }
 
   /**
+   * Allows you to set the token for testing purposes.
+   * @param accessToken
+   */
+  public setAccessToken(accessToken: string): void {
+    this.accessToken = accessToken;
+  }
+
+  /**
    * Sends a GraphQL request to the configured endpoint.
    * @param query - The GraphQL query or mutation.
    * @param variables - An optional object containing query variables.
    * @returns The data returned from the GraphQL API.
    * @throws Error if the request fails or the response contains errors.
    */
-  async request<T>(
+  public async request<T>(
     query: string,
     variables: Record<string, any> = {},
   ): Promise<T> {
@@ -112,7 +124,10 @@ class GraphQLClient {
     try {
       const response = await fetch(this.endpoint, {
         method: 'POST',
-        headers: this.headers,
+        headers: {
+          ...this.headers,
+          Authorization: `Bearer ${this.accessToken}`,
+        },
         body: JSON.stringify({ query, variables }),
       });
 

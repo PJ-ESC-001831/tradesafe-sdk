@@ -22,5 +22,5 @@
     "allowSyntheticDefaultImports": true // Allow default imports from modules with no default export
   },
   "include": ["src/**/*"],             // Include all TypeScript files in the `src` directory
-  "exclude": ["node_modules", "dist"]  // Exclude `node_modules` and output directory
+  "exclude": ["node_modules", "dist", "tests"]  // Exclude `node_modules` and output directory
 }
