@@ -23,7 +23,13 @@
   },
   "homepage": "https://github.com/PJ-ESC-001831/tradesafe-sdk#readme",
   "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^8.20.0",
+    "@typescript-eslint/parser": "^8.20.0",
     "dotenv": "^16.4.7",
-    "prettier": "^3.4.2"
+    "eslint": "^9.18.0",
+    "eslint-config-prettier": "^10.0.1",
+    "eslint-plugin-prettier": "^5.2.2",
+    "prettier": "^3.4.2",
+    "typescript": "^5.7.3"
   }
 }

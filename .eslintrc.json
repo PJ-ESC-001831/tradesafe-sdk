@@ -1,10 +1,32 @@
 {
-  "plugins": ["prettier"],
+  "plugins": ["prettier", "@typescript-eslint"],
   "extends": [
     "eslint:recommended",
-    "plugin:prettier/recommended"
+    "plugin:@typescript-eslint/recommended", // Adds TypeScript-specific linting rules
+    "plugin:prettier/recommended"           // Enables Prettier integration
   ],
+  "parser": "@typescript-eslint/parser",    // Specifies the ESLint parser for TypeScript
+  "parserOptions": {
+    "ecmaVersion": 2020,                   // Allows for modern ECMAScript features
+    "sourceType": "module",                // Allows for the use of imports
+    "ecmaFeatures": {
+      "jsx": true                          // Enable linting for JSX if needed
+    }
+  },
   "rules": {
-    "prettier/prettier": "error"
+    "prettier/prettier": "error",          // Ensures code follows Prettier formatting
+    "@typescript-eslint/no-unused-vars": ["error", { "argsIgnorePattern": "^_" }], // Warns on unused vars but allows _-prefixed vars
+    "@typescript-eslint/explicit-function-return-type": "off", // Disable mandatory return types
+    "@typescript-eslint/no-explicit-any": "warn",             // Warn against `any` type usage
+    "@typescript-eslint/explicit-module-boundary-types": "off" // Disable requiring explicit boundary types
+  },
+  "env": {
+    "node": true,                          // Enable Node.js global variables
+    "browser": true                        // Enable browser global variables
+  },
+  "settings": {
+    "import/resolver": {
+      "typescript": {}                     // Ensure ESLint can resolve TypeScript imports
+    }
   }
 }

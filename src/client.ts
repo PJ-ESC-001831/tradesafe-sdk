@@ -1,9 +1,17 @@
-import errors from '../errors/index.js';
+import {
+  MissingEnvironmentVariablesError,
+  AuthorisationFailedError,
+} from './errors/auth';
 
 /**
  * A lightweight GraphQL client with built-in authentication.
  */
 class GraphQLClient {
+  private headers: Record<string, string>;
+  private endpoint?: string;
+  private clientId?: string;
+  private secret?: string;
+
   constructor() {
     this.headers = {
       'Content-Type': 'application/json',
@@ -12,18 +20,18 @@ class GraphQLClient {
 
   /**
    * Configures the client with authentication credentials.
-   * @param {string} clientId The client ID for authentication.
-   * @param {string} secret The client secret for authentication.
-   * @param {string} endpoint - The GraphQL API endpoint.
-   * @returns {GraphQLClient} The configured instance of GraphQLClient.
+   * @param clientId - The client ID for authentication.
+   * @param secret - The client secret for authentication.
+   * @param endpoint - The GraphQL API endpoint.
+   * @returns The configured instance of GraphQLClient.
    * @throws MissingEnvironmentVariablesError if `clientId` or `secret` are not provided.
    */
-  config(clientId, secret, endpoint) {
+  config(clientId: string, secret: string, endpoint: string): GraphQLClient {
     if (!clientId || !secret) {
       console.error(
         'Please ensure that you have both the clientId, secret, and endpoint variables set.',
       );
-      throw new errors.auth.MissingEnvironmentVariablesError();
+      throw new MissingEnvironmentVariablesError();
     }
 
     this.endpoint = endpoint;
@@ -35,10 +43,16 @@ class GraphQLClient {
 
   /**
    * Authenticates the client and sets the `Authorization` header.
-   * @returns {Promise<GraphQLClient>} The authenticated instance of GraphQLClient.
+   * @returns The authenticated instance of GraphQLClient.
    * @throws AuthorisationFailedError if authentication fails.
    */
-  async auth() {
+  async auth(): Promise<GraphQLClient> {
+    if (!this.clientId || !this.secret) {
+      throw new MissingEnvironmentVariablesError(
+        'Authentication configuration is incomplete.',
+      );
+    }
+
     try {
       const response = await fetch('https://auth.tradesafe.co.za/oauth/token', {
         method: 'POST',
@@ -53,15 +67,17 @@ class GraphQLClient {
       });
 
       if (!response.ok) {
-        throw new errors.auth.AuthorisationFailedError(
+        throw new AuthorisationFailedError(
           `Authentication failed: ${response.statusText}`,
         );
       }
 
-      const { access_token: accessToken } = await response.json();
+      const { access_token: accessToken } = (await response.json()) as {
+        access_token: string;
+      };
 
       if (!accessToken) {
-        throw new errors.auth.AuthorisationFailedError(
+        throw new AuthorisationFailedError(
           'Authentication failed: No access token received.',
         );
       }
@@ -72,7 +88,7 @@ class GraphQLClient {
       };
 
       return this;
-    } catch (error) {
+    } catch (error: any) {
       console.error(error.message);
       throw error;
     }
@@ -80,31 +96,38 @@ class GraphQLClient {
 
   /**
    * Sends a GraphQL request to the configured endpoint.
-   * @param {string} query - The GraphQL query or mutation.
-   * @param {Object} [variables={}] - An optional object containing query variables.
-   * @returns {Promise<Object>} The data returned from the GraphQL API.
+   * @param query - The GraphQL query or mutation.
+   * @param variables - An optional object containing query variables.
+   * @returns The data returned from the GraphQL API.
    * @throws Error if the request fails or the response contains errors.
    */
-  async request(query, variables = {}) {
+  async request<T>(
+    query: string,
+    variables: Record<string, any> = {},
+  ): Promise<T> {
+    if (!this.endpoint) {
+      throw new Error('GraphQL endpoint is not configured.');
+    }
+
     try {
       const response = await fetch(this.endpoint, {
         method: 'POST',
         headers: this.headers,
-        body: new URLSearchParams({ query, variables }).toString(),
+        body: JSON.stringify({ query, variables }),
       });
 
       if (!response.ok) {
         throw new Error(`GraphQL request failed: ${response.statusText}`);
       }
 
-      const json = await response.json();
+      const json = (await response.json()) as { data: T; errors?: any[] };
 
       if (json.errors) {
         throw new Error(`GraphQL errors: ${JSON.stringify(json.errors)}`);
       }
 
       return json.data;
-    } catch (error) {
+    } catch (error: any) {
       console.error(error.message);
       throw error;
     }
