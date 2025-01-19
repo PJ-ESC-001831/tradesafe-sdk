@@ -5,6 +5,7 @@
   "type": "module",
   "main": "index.js",
   "scripts": {
+    "test": "jest",
     "build": "tsc"
   },
   "repository": {

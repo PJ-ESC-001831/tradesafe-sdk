@@ -17,7 +17,9 @@ class GraphQLClient {
     this.headers = {
       'Content-Type': 'application/json',
     };
-    this.endpoint = 'https://api.tradesafe.co.za/graphql';
+    this.endpoint =
+      process.env.TRADESAFE_ENDPOINT ||
+      'https://api-developer.tradesafe.dev/graphql';
   }
 
   /**
@@ -108,13 +110,15 @@ class GraphQLClient {
 
   /**
    * Sends a GraphQL request to the configured endpoint.
-   * @param query - The GraphQL query or mutation.
-   * @param variables - An optional object containing query variables.
+   * @param query The GraphQL query or mutation.
+   * @param operationName Name of the operation to read data from.
+   * @param variables An optional object containing query variables.
    * @returns The data returned from the GraphQL API.
    * @throws Error if the request fails or the response contains errors.
    */
   public async request<T>(
     query: string,
+    operationName: string,
     variables: Record<string, any> = {},
   ): Promise<T> {
     if (!this.endpoint) {
@@ -122,14 +126,15 @@ class GraphQLClient {
     }
 
     try {
-      const response = await fetch(this.endpoint, {
+      const requestOptions = {
         method: 'POST',
         headers: {
           ...this.headers,
           Authorization: `Bearer ${this.accessToken}`,
         },
         body: JSON.stringify({ query, variables }),
-      });
+      };
+      const response = await fetch(this.endpoint, requestOptions);
 
       if (!response.ok) {
         throw new Error(`GraphQL request failed: ${response.statusText}`);
@@ -141,7 +146,9 @@ class GraphQLClient {
         throw new Error(`GraphQL errors: ${JSON.stringify(json.errors)}`);
       }
 
-      return json.data;
+      return (json.data as { [operationName: string]: { data: T } })[
+        operationName
+      ].data;
     } catch (error: any) {
       console.error(error.message);
       throw error;
