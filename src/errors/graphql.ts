@@ -13,3 +13,9 @@ export class GraphQLRequestFailedError extends BaseError {
     super('GraphQLRequestFailedError', message, 'graphql');
   }
 }
+
+export class GraphQLEndpointNotConfiguredError extends BaseError {
+  constructor(message: string = 'The GraphQL endpoint is not configured.') {
+    super('GraphQLEndpointNotConfiguredError', message, 'graphql');
+  }
+}

@@ -2,6 +2,10 @@ import {
   MissingEnvironmentVariablesError,
   AuthorisationFailedError,
 } from './errors/auth';
+import {
+  GraphQLEndpointNotConfiguredError,
+  GraphQLRequestFailedError,
+} from './errors/graphql';
 
 /**
  * A lightweight GraphQL client with built-in authentication.
@@ -24,6 +28,7 @@ class GraphQLClient {
 
   /**
    * Configures the client with authentication credentials.
+   *
    * @param clientId - The client ID for authentication.
    * @param secret - The client secret for authentication.
    * @returns The configured instance of GraphQLClient.
@@ -52,6 +57,7 @@ class GraphQLClient {
 
   /**
    * Authenticates the client and sets the `Authorization` header.
+   *
    * @returns The authenticated instance of GraphQLClient.
    * @throws AuthorisationFailedError if authentication fails.
    */
@@ -110,6 +116,7 @@ class GraphQLClient {
 
   /**
    * Sends a GraphQL request to the configured endpoint.
+   *
    * @param query The GraphQL query or mutation.
    * @param operationName Name of the operation to read data from.
    * @param variables An optional object containing query variables.
@@ -120,9 +127,9 @@ class GraphQLClient {
     query: string,
     operationName: string,
     variables: Record<string, any> = {},
-  ): Promise<T> {
+  ): Promise<T | null> {
     if (!this.endpoint) {
-      throw new Error('GraphQL endpoint is not configured.');
+      throw new GraphQLEndpointNotConfiguredError();
     }
 
     try {
@@ -137,20 +144,24 @@ class GraphQLClient {
       const response = await fetch(this.endpoint, requestOptions);
 
       if (!response.ok) {
-        throw new Error(`GraphQL request failed: ${response.statusText}`);
+        throw new GraphQLRequestFailedError(`${response.statusText}`);
       }
 
       const json = (await response.json()) as { data: T; errors?: any[] };
 
       if (json.errors) {
-        throw new Error(`GraphQL errors: ${JSON.stringify(json.errors)}`);
+        throw new GraphQLRequestFailedError(
+          `GraphQL errors: ${JSON.stringify(json.errors)}`,
+        );
       }
 
-      return (json.data as { [operationName: string]: { data: T } })[
-        operationName
-      ].data;
+      return (json.data as { [operationName: string]: T })[operationName];
     } catch (error: any) {
+      // If the object being queried for does not give a response.
+      if (error.message.includes('No query results')) return null;
+
       console.error(error.message);
+
       throw error;
     }
   }
