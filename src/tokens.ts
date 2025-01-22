@@ -116,6 +116,31 @@ export async function createToken(
   return response;
 }
 
+export async function getTokenStatement(
+  client: GraphQLClient,
+  id: string,
+  first: number = 10,
+  page: number = 1,
+): Promise<Token | null> {
+  const query = `
+    query ($id: ID!, $first: Int, $page: Int) {
+       tokenStatement(id: $id, first: $first, page: $page) {
+        data {
+            type
+            amount
+            status
+            reference
+            createdAt
+            updatedAt
+        }
+      }
+    }
+  `;
+
+  const variables = { id, first, page };
+  return client.request(query, 'tokenStatement', variables);
+}
+
 /**
  * Updates a token using the GraphQL API.
  *

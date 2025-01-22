@@ -3,6 +3,7 @@ import {
   getTokenById,
   createToken,
   updateToken,
+  getTokenStatement,
 } from '../src/tokens';
 import GraphQLClient from '../src/client';
 import { config } from 'dotenv';
@@ -144,6 +145,23 @@ describe('Token API functions', () => {
        */
 
       expect(token).toEqual({ id: update.id });
+    });
+  });
+
+  describe('getTokenStatement', () => {
+    it('should retrieve a list of payments for the token', async () => {
+      const token = await getTokenStatement(
+        mockClient,
+        '2ysn0GOPN5yMOVukPVsGY',
+      );
+
+      /**
+       *    Example Response: {
+       *      id: "2ysn0GOPN5yMOVukPVsGY",
+       *    }
+       */
+
+      expect(token).toBeTruthy();
     });
   });
 
