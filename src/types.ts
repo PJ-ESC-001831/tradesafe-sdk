@@ -23,15 +23,15 @@ export interface TokenInput {
 }
 
 export interface Token {
-  id: string;
-  name: string;
-  reference: string;
+  id?: string;
+  name?: string;
+  reference?: string;
   user: {
-    givenName: string;
-    familyName: string;
+    givenName?: string;
+    familyName?: string;
     email: string;
-    mobile: string;
-    idNumber: string;
+    mobile?: string;
+    idNumber?: string;
   };
   organization?: {
     name: string;

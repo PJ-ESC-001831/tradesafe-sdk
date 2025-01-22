@@ -1,4 +1,4 @@
-import { listTokens, getTokenById } from '../src/tokens';
+import { listTokens, getTokenById, createToken } from '../src/tokens';
 import GraphQLClient from '../src/client';
 import { config } from 'dotenv';
 
@@ -23,6 +23,46 @@ describe('Token API functions', () => {
   describe('listTokens', () => {
     it('should do a basic query to list the tokens', async () => {
       const tokens = await listTokens(mockClient);
+      /*
+        {
+          "0": {
+            id: "2ysn0GOPN5yMOVukPVsGY",
+            name: null,
+            reference: "SIT-XFPQSYT3",
+            user: {
+              givenName: null,
+              familyName: null,
+              email: "test@email.com",
+              mobile: null,
+            },
+            organization: null,
+          },
+          "1": {
+            id: "2ysmz8wc9mpVjCJTM55e9",
+            name: null,
+            reference: "SIT-XSXQBXBK",
+            user: {
+              givenName: null,
+              familyName: null,
+              email: "test@email.com",
+              mobile: null,
+            },
+            organization: null,
+          },
+          "2": {
+            id: "2ysmwm7j8CRIHpufRfQPA",
+            name: null,
+            reference: "SIT-XFNWH837",
+            user: {
+              givenName: null,
+              familyName: null,
+              email: "test@email.com",
+              mobile: null,
+            },
+            organization: null,
+          },
+        }
+      */
       expect(tokens).toBeTruthy();
     });
   });
@@ -31,6 +71,27 @@ describe('Token API functions', () => {
     it('should fetch a specific token by ID', async () => {
       const tokenId = '2ypwPd6zArWyrz64Onbty';
       const token = await getTokenById(mockClient, tokenId);
+      /*
+        Example response: {
+          id: "2ypwPd6zArWyrz64Onbty",
+          name: "co-maker t/a co-maker",
+          reference: "SIT-XVPPH5GB",
+          balance: 0,
+          user: {
+            givenName: "Jacques",
+            familyName: "Barnard",
+            email: "co-maker@tri2b.me",
+            mobile: "+27721535649",
+          },
+          organization: {
+            name: "co-maker",
+            tradeName: "co-maker",
+            type: "SOLE_PROP",
+            registration: "9303265094085",
+            taxNumber: null,
+          },
+        }
+      */
       expect(token).toBeTruthy();
       expect(token?.id).toBe(tokenId);
     });
@@ -39,6 +100,24 @@ describe('Token API functions', () => {
       const tokenId = '2ypwPdxxxxxWyrz64Onbty';
       const token = await getTokenById(mockClient, tokenId);
       expect(token).toBeNull();
+    });
+  });
+
+  describe('createToken', () => {
+    it('should create a new token', async () => {
+      const email = 'test@email.com';
+      const token = await createToken(mockClient, { user: { email } });
+
+      /**
+       *    Example response: {
+       *      id: "2ysn0GOPN5yMOVukPVsGY",
+       *      user: {
+       *        email: "test@email.com",
+       *      },
+       *    }
+       */
+
+      expect(token).toBeTruthy();
     });
   });
 
