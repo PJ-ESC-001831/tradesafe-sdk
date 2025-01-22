@@ -1,6 +1,12 @@
-import { listTokens, getTokenById, createToken } from '../src/tokens';
+import {
+  listTokens,
+  getTokenById,
+  createToken,
+  updateToken,
+} from '../src/tokens';
 import GraphQLClient from '../src/client';
 import { config } from 'dotenv';
+import { Token } from '../src/types';
 
 config();
 
@@ -69,7 +75,7 @@ describe('Token API functions', () => {
 
   describe('getTokenById', () => {
     it('should fetch a specific token by ID', async () => {
-      const tokenId = '2ypwPd6zArWyrz64Onbty';
+      const tokenId = '2ysn0GOPN5yMOVukPVsGY';
       const token = await getTokenById(mockClient, tokenId);
       /*
         Example response: {
@@ -118,6 +124,26 @@ describe('Token API functions', () => {
        */
 
       expect(token).toBeTruthy();
+    });
+  });
+
+  describe('updateToken', () => {
+    it('should update a token', async () => {
+      const update = {
+        id: '2ysn0GOPN5yMOVukPVsGY',
+        user: {
+          givenName: 'Test User',
+        },
+      } as Partial<Token>;
+      const token = await updateToken(mockClient, update);
+
+      /**
+       *    Example Response: {
+       *      id: "2ysn0GOPN5yMOVukPVsGY",
+       *    }
+       */
+
+      expect(token).toEqual({ id: update.id });
     });
   });
 

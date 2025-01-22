@@ -19,3 +19,9 @@ export class GraphQLEndpointNotConfiguredError extends BaseError {
     super('GraphQLEndpointNotConfiguredError', message, 'graphql');
   }
 }
+
+export class MissingFieldError extends BaseError {
+  constructor(message: string) {
+    super('MissingFieldError', message, 'graphql');
+  }
+}

@@ -1,4 +1,5 @@
 import GraphQLClient from './client';
+import { MissingFieldError } from './errors/graphql';
 import { Token } from './types';
 
 /**
@@ -92,7 +93,7 @@ export async function getTokenById(
  */
 export async function createToken(
   client: GraphQLClient,
-  input: Partial<Token>,
+  input: Token,
 ): Promise<Token | null> {
   const mutation = `
     mutation ($input: TokenInput!) {
@@ -106,7 +107,45 @@ export async function createToken(
   `;
 
   const variables = { input };
-  const response = await client.request(mutation, 'tokenCreate', variables) as Token|null;
+  const response = (await client.request(
+    mutation,
+    'tokenCreate',
+    variables,
+  )) as Token | null;
+
+  return response;
+}
+
+/**
+ * Updates a token using the GraphQL API.
+ *
+ * @param {GraphQLClient} client - The GraphQL client instance to use for the request.
+ * @param {object} input - The input data for updating the token.
+ * @returns {Promise<Token | null>} A promise that resolves to the created token.
+ */
+export async function updateToken(
+  client: GraphQLClient,
+  input: Partial<Token>,
+): Promise<Token | null> {
+  const { id = null, ...update } = input;
+
+  if (!id)
+    throw new MissingFieldError('The ID field is required to update a token.');
+
+  const mutation = `
+    mutation ($id: ID!, $update: TokenInput!) {
+      tokenUpdate(id: $id, input: $update) {
+        id
+      }
+    }
+  `;
+
+  const variables = { id, update };
+  const response = (await client.request(
+    mutation,
+    'tokenUpdate',
+    variables,
+  )) as Token | null;
 
   return response;
 }

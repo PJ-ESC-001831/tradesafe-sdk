@@ -4,7 +4,7 @@ export default class BaseError extends Error {
   constructor(name: string, message: string, namespace: string = 'DEFAULT') {
     super(message);
     this.name = name;
-    this.namespace = namespace;
+    this.namespace = namespace.toUpperCase();
     Object.setPrototypeOf(this, new.target.prototype);
   }
 }
