@@ -128,6 +128,11 @@ class GraphQLClient {
     operationName: string,
     variables: Record<string, any> = {},
   ): Promise<T | null> {
+    type ResponseType = {
+      data: { [operationName: string]: T };
+      errors?: any[];
+    };
+
     if (!this.endpoint) {
       throw new GraphQLEndpointNotConfiguredError();
     }
@@ -147,13 +152,18 @@ class GraphQLClient {
         throw new GraphQLRequestFailedError(`${response.statusText}`);
       }
 
-      const json = (await response.json()) as { data: T; errors?: any[] };
+      const json = (await response.json()) as {
+        data: T;
+        errors?: any[];
+      } as ResponseType;
 
-      if (json.errors) {
-        throw new GraphQLRequestFailedError(
-          `GraphQL errors: ${JSON.stringify(json.errors)}`,
-        );
-      }
+      if (json.errors && !json.data[operationName]) {
+          throw new GraphQLRequestFailedError(
+            `GraphQL errors: ${JSON.stringify(json.errors)}`,
+          );
+        } else if (json.errors) {
+          console.error(json.errors);
+        }
 
       return (json.data as { [operationName: string]: T })[operationName];
     } catch (error: any) {
