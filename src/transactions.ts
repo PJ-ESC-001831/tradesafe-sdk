@@ -47,7 +47,9 @@ export async function listTransactions(
       }
     }
   `;
-  return executeRequest(client, query, 'transactions');
+  const response = await executeRequest(client, query, 'transactions');
+
+  return response?.data || [];
 }
 
 /**
