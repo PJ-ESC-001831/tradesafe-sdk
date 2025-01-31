@@ -157,13 +157,13 @@ class GraphQLClient {
         errors?: any[];
       } as ResponseType;
 
-      if (json.errors && !json.data[operationName]) {
-          throw new GraphQLRequestFailedError(
-            `GraphQL errors: ${JSON.stringify(json.errors)}`,
-          );
-        } else if (json.errors) {
-          console.error(json.errors);
-        }
+      if (json.errors && !json.data) {
+        throw new GraphQLRequestFailedError(
+          json.errors.map(({ message }) => message).join('\n- '),
+        );
+      } else if (json.errors) {
+        console.error(json.errors);
+      }
 
       return (json.data as { [operationName: string]: T })[operationName];
     } catch (error: any) {

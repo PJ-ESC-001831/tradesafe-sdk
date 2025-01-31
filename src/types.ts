@@ -58,7 +58,8 @@ export interface Transaction {
   createdAt: string;
 }
 
-interface AllocationInput {
+interface AllocationInput {\
+  id?: string;
   title: string;
   description: string;
   value: number;
@@ -67,6 +68,7 @@ interface AllocationInput {
 }
 
 interface PartyInput {
+  id?: string;
   token: string;
   role: string;
   fee?: number;
