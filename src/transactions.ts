@@ -1,4 +1,5 @@
 import GraphQLClient from './client';
+import { GraphQLRequestFailedError } from './errors/graphql';
 import { Transaction, TransactionInput } from './types';
 
 /**
@@ -14,14 +15,15 @@ async function executeRequest(
   client: GraphQLClient,
   query: string,
   key: string,
-  variables: object = {}
+  variables: object = {},
 ): Promise<any | null> {
   try {
     const response = await client.request(query, key, variables);
     return response || null;
   } catch (error) {
-    console.error(`GraphQL request failed: ${error}`);
-    return null;
+    const { message = undefined } = error as unknown & { message?: string };
+
+    throw new GraphQLRequestFailedError(message);
   }
 }
 
@@ -61,7 +63,7 @@ export async function listTransactions(
  */
 export async function getTransaction(
   client: GraphQLClient,
-  id: string
+  id: string,
 ): Promise<Transaction | null> {
   const query = `
     query ($id: ID!) {
@@ -102,7 +104,14 @@ export async function createTransaction(
       parties: { create: input.parties },
     },
   };
-  return executeRequest(client, mutation, 'transactionCreate', variables);
+  const response = await executeRequest(
+    client,
+    mutation,
+    'transactionCreate',
+    variables,
+  );
+
+  return response;
 }
 
 /**
