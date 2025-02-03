@@ -8,6 +8,11 @@ import {
 } from './errors/graphql';
 
 /**
+ * @var GraphQLClient cached instance to use multiple times.
+ */
+let instance: GraphQLClient;
+
+/**
  * A lightweight GraphQL client with built-in authentication.
  */
 class GraphQLClient {
@@ -41,7 +46,8 @@ class GraphQLClient {
     clientId: string,
     clientSecret: string,
   ): Promise<GraphQLClient> {
-    const instance = new GraphQLClient().config(clientId, clientSecret);
+    if (instance) return instance;
+    instance = new GraphQLClient().config(clientId, clientSecret);
     await instance.authenticate();
     return instance;
   }
