@@ -115,7 +115,7 @@ describe('Token API functions', () => {
       const email = 'test@email.com';
       const token = await createToken(mockClient, { user: { email } });
 
-      /**
+      /*
        *    Example response: {
        *      id: "2ysn0GOPN5yMOVukPVsGY",
        *      user: {

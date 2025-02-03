@@ -27,6 +27,26 @@ class GraphQLClient {
   }
 
   /**
+   * Creates and returns an **authenticated** instance of `GraphQLClient` using the provided credentials.
+   *
+   * @async
+   * @function createAuthenticatedClient
+   * @param {string} clientId - The OAuth client ID.
+   * @param {string} clientSecret - The OAuth client secret.
+   * @returns {Promise<GraphQLClient>} A promise that resolves to an authenticated instance of `GraphQLClient`.
+   * @throws {MissingEnvironmentVariablesError} If `clientId` or `clientSecret` are empty or missing.
+   * @throws {AuthorisationFailedError} If the authentication request fails or no token is returned.
+   */
+  public static async createAuthenticatedClient(
+    clientId: string,
+    clientSecret: string,
+  ): Promise<GraphQLClient> {
+    const instance = new GraphQLClient().config(clientId, clientSecret);
+    await instance.authenticate();
+    return instance;
+  }
+
+  /**
    * Configures the client with authentication credentials.
    *
    * @param clientId - The client ID for authentication.
