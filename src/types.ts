@@ -52,13 +52,24 @@ export interface TransactionInput {
   parties: PartyInput[];
 }
 
+export interface TransactionUpdateInput {
+  id: string;
+  title?: string;
+  description?: string;
+  industry?: string;
+  currency?: string;
+  feeAllocation?: string;
+  allocations?: Partial<AllocationInput>[];
+  parties?: Partial<PartyInput>[];
+}
+
 export interface Transaction {
   id: string;
   title: string;
   createdAt: string;
 }
 
-interface AllocationInput {\
+interface AllocationInput {
   id?: string;
   title: string;
   description: string;

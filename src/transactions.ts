@@ -1,6 +1,6 @@
 import GraphQLClient from './client';
 import { GraphQLRequestFailedError } from './errors/graphql';
-import { Transaction, TransactionInput } from './types';
+import { Transaction, TransactionInput, TransactionUpdateInput } from './types';
 
 /**
  * Executes a GraphQL query or mutation and returns the response.
@@ -10,6 +10,7 @@ import { Transaction, TransactionInput } from './types';
  * @param {string} key - The key to extract data from the response.
  * @param {object} [variables={}] - Optional variables for the request.
  * @returns {Promise<any | null>} The extracted data or null if the request fails.
+ * @throws {GraphQLRequestFailedError} If the GraphQL request fails.
  */
 async function executeRequest(
   client: GraphQLClient,
@@ -119,17 +120,15 @@ export async function createTransaction(
  *
  * @param {GraphQLClient} client - The GraphQL client instance.
  * @param {TransactionInput} input - The transaction input data.
- * @param {string} id - The ID of the transaction to update.
  * @returns {Promise<Transaction | null>} The updated transaction or null on failure.
  */
-export async function updateTransaction(
+export function updateTransaction(
   client: GraphQLClient,
-  input: TransactionInput,
-  id: string,
+  input: TransactionUpdateInput,
 ): Promise<Transaction | null> {
   const mutation = `
-    mutation ($id: ID!, $input: UpdateTransactionInput!) {
-      transactionUpdate(id: $id, input: $input) { id }
+    mutation ($input: UpdateTransactionInput!) {
+      transactionUpdate(input: $input) { id }
     }
   `;
   const variables = {
@@ -138,7 +137,19 @@ export async function updateTransaction(
       allocations: { update: input.allocations },
       parties: { update: input.parties },
     },
-    id,
   };
   return executeRequest(client, mutation, 'transactionUpdate', variables);
+}
+
+export function createCheckoutLink(
+  client: GraphQLClient,
+  transactionId: string,
+): Promise<string> {
+  const mutation = `
+    mutation ($transactionId: ID!) {
+      checkoutLink(transactionId: $transactionId)
+    }
+  `;
+  const variables = { transactionId };
+  return executeRequest(client, mutation, 'checkoutLink', variables);
 }
