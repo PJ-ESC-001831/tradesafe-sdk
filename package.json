@@ -2,7 +2,6 @@
   "name": "tradesafe-sdk",
   "version": "0.0.0",
   "description": "An SDK that I contributed to for interacting with the Tradesafe GraphQL interface from my project.",
-  "type": "module",
   "main": "index.js",
   "scripts": {
     "test": "jest",
