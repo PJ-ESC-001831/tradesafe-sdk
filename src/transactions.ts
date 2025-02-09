@@ -92,7 +92,7 @@ export async function getTransaction(
 export async function createTransaction(
   client: GraphQLClient,
   input: TransactionInput,
-): Promise<Transaction | null> {
+): Promise<Pick<Transaction, 'id'>> {
   const mutation = `
     mutation ($input: CreateTransactionInput!) {
       transactionCreate(input: $input) { id }
