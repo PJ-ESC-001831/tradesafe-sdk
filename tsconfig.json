@@ -1,25 +1,23 @@
 {
   "compilerOptions": {
-    "target": "ES2020",                  // Target ECMAScript version
-    "module": "CommonJS",               // Use CommonJS module system for compatibility
-    "outDir": "./dist",                 // Output directory for compiled files
-    "rootDir": "./src",                 // Root directory for source files
-    "strict": true,                     // Enable all strict type-checking options
-    "esModuleInterop": true,            // Enable compatibility with CommonJS modules
-    "forceConsistentCasingInFileNames": true, // Enforce consistent file casing
-    "skipLibCheck": true,               // Skip type checking of declaration files
-    "resolveJsonModule": true,          // Allow importing of JSON files
-    "declaration": true,                // Generate `.d.ts` declaration files
-    "declarationMap": true,             // Generate source maps for declaration files
-    "sourceMap": true,                  // Generate source maps for debugging
-    "moduleResolution": "node",         // Use Node.js-style module resolution
-    "lib": ["ES2019", "DOM"],           // Include standard library and DOM definitions
-    "noImplicitAny": true,              // Disallow variables with `any` type
-    "noUnusedLocals": true,             // Report unused local variables
-    "noUnusedParameters": true,         // Report unused function parameters
-    "noFallthroughCasesInSwitch": true, // Prevent fallthrough cases in switch statements
-    "noImplicitReturns": true,          // Ensure all code paths return a value
-    "allowSyntheticDefaultImports": true // Allow default imports from modules with no default export
+    "target": "ES2020",
+    "module": "CommonJS",
+    "lib": ["ES2020"],
+    "allowJs": true,
+    "checkJs": true,
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "moduleResolution": "node",
+    "noImplicitAny": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
   },
   "include": ["src/**/*"],             // Include all TypeScript files in the `src` directory
   "exclude": ["node_modules", "dist", "tests"]  // Exclude `node_modules` and output directory

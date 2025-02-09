@@ -73,6 +73,38 @@ describe('Transaction API functions', () => {
       expect(transaction?.id).toBeDefined();
     });
 
+    it('should successfully create a transaction with the actual data', async () => {
+      const transaction = await createTransaction(mockClient, {
+        title: 'Changed title',
+        description:
+          'This is a second test product that I want to create and see whether it is creating on the database.',
+        industry: 'GENERAL_GOODS_SERVICES',
+        currency: 'ZAR',
+        feeAllocation: 'SELLER',
+        allocations: [
+          {
+            title: 'General Sales Allocation',
+            description: 'General allocation.',
+            value: 50.8,
+            daysToDeliver: 7,
+            daysToInspect: 7,
+          },
+        ],
+        parties: [
+          {
+            token: '2z2GwRUaRj3dMaOcxW5De',
+            role: 'BUYER',
+          },
+          {
+            token: '2z2GwzPWYhbqb86I60Pmt',
+            role: 'SELLER',
+          },
+        ],
+      });
+      expect(transaction).toBeTruthy();
+      expect(transaction?.id).toBeDefined();
+    });
+
     it('should fail to create a transaction with missing fields', async () => {
       jest
         .spyOn(mockClient, 'request')

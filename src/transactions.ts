@@ -141,7 +141,15 @@ export function updateTransaction(
   return executeRequest(client, mutation, 'transactionUpdate', variables);
 }
 
-export function createCheckoutLink(
+/**
+ * Generates a checkout link for a given transaction.
+ *
+ * @param {GraphQLClient} client - The TradeSafe GraphQL client.
+ * @param {string} transactionId - The ID of the transaction.
+ * @returns {Promise<string>} The checkout link for the transaction.
+ * @throws {Error} If the request fails or returns an invalid response.
+ */
+export async function createCheckoutLink(
   client: GraphQLClient,
   transactionId: string,
 ): Promise<string> {
@@ -150,6 +158,8 @@ export function createCheckoutLink(
       checkoutLink(transactionId: $transactionId)
     }
   `;
+
   const variables = { transactionId };
-  return executeRequest(client, mutation, 'checkoutLink', variables);
+
+  return await executeRequest(client, mutation, 'checkoutLink', variables);
 }
