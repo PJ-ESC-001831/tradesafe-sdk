@@ -4,7 +4,7 @@
   "description": "An SDK that I contributed to for interacting with the Tradesafe GraphQL interface from my project.",
   "main": "index.js",
   "scripts": {
-    "test": "jest",
+    "test": "NODE_OPTIONS=--experimental-vm-modules jest",
     "build": "tsc"
   },
   "repository": {
